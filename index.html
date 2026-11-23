@@ -196,16 +196,16 @@
   </div>
 
   <script>
-    var URLS_CSV = {
-      'PEB II': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=501827691&single=true&output=csv',
-      'ARTE': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1791807749&single=true&output=csv',
-      'CIÊNCIAS': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1829439472&single=true&output=csv',
-      'EDUCAÇÃO FÍSICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1879961278&single=true&output=csv',
-      'GEOGRAFIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=250121415&single=true&output=csv',
-      'HISTÓRIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=549092330&single=true&output=csv',
-      'LÍNGUA INGLESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=902478054&single=true&output=csv',
-      'LÍNGUA PORTUGUESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1903026972&single=true&output=csv',
-      'MATEMÁTICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1923005275&single=true&output=csv'
+    var URLS_HTML = {
+      'PEB II': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=501827691&single=true',
+      'ARTE': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=1791807749&single=true',
+      'CIÊNCIAS': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=1829439472&single=true',
+      'EDUCAÇÃO FÍSICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=1879961278&single=true',
+      'GEOGRAFIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=250121415&single=true',
+      'HISTÓRIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=549092330&single=true',
+      'LÍNGUA INGLESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=902478054&single=true',
+      'LÍNGUA PORTUGUESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=1903026972&single=true',
+      'MATEMÁTICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pubhtml?gid=1923005275&single=true'
     };
 
     var cargoAtivo = '';
@@ -215,59 +215,31 @@
     var periodoFiltro = 'TODOS';
     var discFiltro = 'TODAS';
 
-    function parseCSV(texto) {
-      var linhas = [];
-      var linhaAtual = [];
-      var valorAtual = '';
-      var entreAspas = false;
-
-      for (var i = 0; i < texto.length; i++) {
-        var ch = texto[i];
-        var prox = texto[i + 1];
-
-        if (entreAspas) {
-          if (ch === '"' && prox === '"') {
-            valorAtual += '"';
-            i++;
-          } else if (ch === '"') {
-            entreAspas = false;
-          } else {
-            valorAtual += ch;
-          }
-        } else {
-          if (ch === '"') {
-            entreAspas = true;
-          } else if (ch === ',') {
-            linhaAtual.push(valorAtual);
-            valorAtual = '';
-          } else if (ch === '\r' && prox === '\n') {
-            linhaAtual.push(valorAtual);
-            linhas.push(linhaAtual);
-            linhaAtual = [];
-            valorAtual = '';
-            i++;
-          } else if (ch === '\n' || ch === '\r') {
-            linhaAtual.push(valorAtual);
-            linhas.push(linhaAtual);
-            linhaAtual = [];
-            valorAtual = '';
-          } else {
-            valorAtual += ch;
-          }
-        }
-      }
-
-      if (valorAtual.length > 0 || linhaAtual.length > 0) {
-        linhaAtual.push(valorAtual);
-        linhas.push(linhaAtual);
-      }
-
-      return linhas;
+    function interpretarCelulaAtribuido(celula) {
+      if (!celula) return false;
+      var checkbox = celula.querySelector('input[type="checkbox"]');
+      if (checkbox) return !!checkbox.checked;
+      var v = String(celula.textContent || '').trim().toUpperCase();
+      return v === 'TRUE' || v === 'VERDADEIRO' || v === '1' || v === 'SIM' || v === 'X';
     }
 
-    function interpretarAtribuido(valorColunaA) {
-      var v = String(valorColunaA || '').trim().toUpperCase();
-      return v === 'TRUE' || v === 'VERDADEIRO' || v === '1' || v === 'SIM' || v === 'X';
+    function extrairLinhasTabelaHTML(htmlTexto) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(htmlTexto, 'text/html');
+      var tabela = doc.querySelector('table.waffle') || doc.querySelector('table');
+      if (!tabela) return [];
+
+      var trList = tabela.querySelectorAll('tr');
+      var linhas = [];
+      for (var i = 0; i < trList.length; i++) {
+        var cells = trList[i].querySelectorAll('td, th');
+        var row = [];
+        for (var c = 0; c < cells.length; c++) {
+          row.push(cells[c]);
+        }
+        linhas.push(row);
+      }
+      return linhas;
     }
 
     function abrirCargo(cargo) {
@@ -316,14 +288,18 @@
       document.getElementById('tela1').style.display = 'block';
     }
 
+    function textoCelula(celula) {
+      return celula ? String(celula.textContent || '').trim() : '';
+    }
+
     function carregarDados() {
       if (!cargoAtivo || carregandoAtual) return;
-      var url = URLS_CSV[cargoAtivo];
+      var url = URLS_HTML[cargoAtivo];
       var btnAtualizar = document.getElementById('btnAtualizar');
       var avisoSync = document.getElementById('avisoSync');
 
-      if (!url || url.indexOf('COLE_A_URL_CSV_') === 0) {
-        document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Configure a URL CSV deste cargo em URLS_CSV.</div>';
+      if (!url || url.indexOf('COLE_A_URL_') === 0) {
+        document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Configure a URL HTML deste cargo em URLS_HTML.</div>';
         return;
       }
 
@@ -338,32 +314,32 @@
 
       fetch(urlSemCache, { cache: 'reload' })
         .then(function(resp) {
-          if (!resp.ok) throw new Error('Falha ao baixar CSV (' + resp.status + ')');
+          if (!resp.ok) throw new Error('Falha ao carregar tabela (' + resp.status + ')');
           return resp.text();
         })
-        .then(function(csvTexto) {
+        .then(function(htmlTexto) {
           carregandoAtual = false;
           btnAtualizar.disabled = false;
           btnAtualizar.innerHTML = '&#8635; Atualizar dados';
           if (cargoAtivo !== cargoConsulta) return;
 
-          var linhas = parseCSV(csvTexto);
+          var linhas = extrairLinhasTabelaHTML(htmlTexto);
           var novos = [];
 
           for (var i = 8; i < linhas.length; i++) {
             var linha = linhas[i];
             if (!linha || linha.length < 2) continue;
 
-            var escola = String(linha[1] || '').trim();
-            var ano = String(linha[4] || '').trim();
-            var turma = String(linha[5] || '').trim();
-            var periodo = String(linha[6] || '').trim();
-            var disciplina = String(linha[7] || '').trim();
-            var aulasRaw = String(linha[8] || '').trim();
+            var escola = textoCelula(linha[1]);
+            var ano = textoCelula(linha[4]);
+            var turma = textoCelula(linha[5]);
+            var periodo = textoCelula(linha[6]);
+            var disciplina = textoCelula(linha[7]);
+            var aulasRaw = textoCelula(linha[8]);
 
             if (!escola && !aulasRaw) continue;
 
-            var atribuido = interpretarAtribuido(linha[0]);
+            var atribuido = interpretarCelulaAtribuido(linha[0]);
             var numConvertido = Number(aulasRaw.replace(',', '.'));
             var aulasValor = aulasRaw === '' ? 0 : (isNaN(numConvertido) ? aulasRaw : numConvertido);
 
