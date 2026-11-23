@@ -196,17 +196,7 @@
   </div>
 
   <script>
-    var URLS_CSV = {
-      'PEB II': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=501827691&single=true&output=csv',
-      'ARTE': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1791807749&single=true&output=csv',
-      'CIÊNCIAS': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1829439472&single=true&output=csv',
-      'EDUCAÇÃO FÍSICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1879961278&single=true&output=csv',
-      'GEOGRAFIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=250121415&single=true&output=csv',
-      'HISTÓRIA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=549092330&single=true&output=csv',
-      'LÍNGUA INGLESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=902478054&single=true&output=csv',
-      'LÍNGUA PORTUGUESA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1903026972&single=true&output=csv',
-      'MATEMÁTICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1923005275&single=true&output=csv'
-    };
+    var URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbyxBYfub-1kBUYrSyzELTTHtZzcgZN6FpLOBMwDSavQaRic3PS-ByPxwpJrf2kvb9rz/exec';
 
     var cargoAtivo = '';
     var registros = [];
@@ -214,61 +204,6 @@
     var statusFiltro = 'TODOS';
     var periodoFiltro = 'TODOS';
     var discFiltro = 'TODAS';
-
-    function parseCSV(texto) {
-      var linhas = [];
-      var linhaAtual = [];
-      var valorAtual = '';
-      var entreAspas = false;
-
-      for (var i = 0; i < texto.length; i++) {
-        var ch = texto[i];
-        var prox = texto[i + 1];
-
-        if (entreAspas) {
-          if (ch === '"' && prox === '"') {
-            valorAtual += '"';
-            i++;
-          } else if (ch === '"') {
-            entreAspas = false;
-          } else {
-            valorAtual += ch;
-          }
-        } else {
-          if (ch === '"') {
-            entreAspas = true;
-          } else if (ch === ',') {
-            linhaAtual.push(valorAtual);
-            valorAtual = '';
-          } else if (ch === '\r' && prox === '\n') {
-            linhaAtual.push(valorAtual);
-            linhas.push(linhaAtual);
-            linhaAtual = [];
-            valorAtual = '';
-            i++;
-          } else if (ch === '\n' || ch === '\r') {
-            linhaAtual.push(valorAtual);
-            linhas.push(linhaAtual);
-            linhaAtual = [];
-            valorAtual = '';
-          } else {
-            valorAtual += ch;
-          }
-        }
-      }
-
-      if (valorAtual.length > 0 || linhaAtual.length > 0) {
-        linhaAtual.push(valorAtual);
-        linhas.push(linhaAtual);
-      }
-
-      return linhas;
-    }
-
-    function interpretarAtribuido(valorColunaA) {
-      var v = String(valorColunaA || '').trim().toUpperCase();
-      return v === 'TRUE' || v === 'VERDADEIRO' || v === '1' || v === 'SIM' || v === 'X';
-    }
 
     function abrirCargo(cargo) {
       cargoAtivo = cargo;
@@ -318,9 +253,13 @@
 
     function carregarDados() {
       if (!cargoAtivo || carregandoAtual) return;
-      var url = URLS_CSV[cargoAtivo];
       var btnAtualizar = document.getElementById('btnAtualizar');
       var avisoSync = document.getElementById('avisoSync');
+
+      if (!URL_WEB_APP || URL_WEB_APP.indexOf('COLE_AQUI_') === 0) {
+        document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Configure a URL /exec do Apps Script em URL_WEB_APP.</div>';
+        return;
+      }
 
       carregandoAtual = true;
       btnAtualizar.disabled = true;
@@ -328,51 +267,24 @@
       avisoSync.textContent = '';
 
       var cargoConsulta = cargoAtivo;
-      var janelaCache = Math.floor(Date.now() / 60000);
-      var sep = url.indexOf('?') === -1 ? '?' : '&';
-      var urlSemCache = url + sep + '_m=' + janelaCache;
+      var sep = URL_WEB_APP.indexOf('?') === -1 ? '?' : '&';
+      var endpoint = URL_WEB_APP + sep + 'cargo=' + encodeURIComponent(cargoConsulta) + '&_t=' + Date.now();
 
-      fetch(urlSemCache, { cache: 'no-store' })
+      fetch(endpoint, { cache: 'no-store' })
         .then(function(resp) {
-          if (!resp.ok) throw new Error('Falha ao baixar CSV (' + resp.status + ')');
-          return resp.text();
+          if (!resp.ok) throw new Error('Falha na consulta (' + resp.status + ')');
+          return resp.json();
         })
-        .then(function(csvTexto) {
+        .then(function(dados) {
           carregandoAtual = false;
           btnAtualizar.disabled = false;
           btnAtualizar.innerHTML = '&#8635; Atualizar dados';
           if (cargoAtivo !== cargoConsulta) return;
-
-          var linhas = parseCSV(csvTexto);
-          var novos = [];
-
-          for (var i = 0; i < linhas.length; i++) {
-            var linha = linhas[i];
-            if (!linha || linha.length < 2) continue;
-
-            var escola = String(linha[1] || '').trim();
-            var ano = String(linha[4] || '').trim();
-            var turma = String(linha[5] || '').trim();
-            var periodo = String(linha[6] || '').trim();
-            var disciplina = String(linha[7] || '').trim();
-            var aulasRaw = String(linha[8] || '').trim();
-
-            if (!escola || !aulasRaw) continue;
-            var numConvertido = Number(aulasRaw.replace(',', '.'));
-            if (isNaN(numConvertido)) continue;
-
-            novos.push({
-              atribuido: interpretarAtribuido(linha[0]),
-              escola: escola,
-              ano: ano,
-              turma: turma,
-              periodo: periodo,
-              disciplina: disciplina,
-              aulas: numConvertido
-            });
+          if (!dados || !dados.ok) {
+            throw new Error(dados && dados.erro ? dados.erro : 'Resposta inválida do servidor.');
           }
 
-          registros = novos;
+          registros = Array.isArray(dados.registros) ? dados.registros : [];
           criarBotoesPeriodo();
           if (cargoAtivo === 'PEB II') criarBotoesDisciplina();
           filtrar();
