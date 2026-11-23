@@ -95,23 +95,14 @@
     }
     .card.disp { border-left-color: #22c55e; }
     .card.atrib { border-left-color: #ef4444; }
-    .card.alterado {
-      box-shadow: 0 0 0 2px #f59e0b, 0 4px 10px rgba(245, 158, 11, 0.25);
-      background: #fffbeb;
-    }
     .card-topo {
       display: flex; justify-content: space-between; align-items: flex-start;
       gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9;
     }
     .escola { font-size: 15px; font-weight: bold; color: #1e293b; }
-    .tag-wrap { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-    .tag-novo-status {
-      font-size: 10px; font-weight: bold; background: #fef3c7; color: #92400e;
-      border: 1px solid #f59e0b; padding: 3px 6px; border-radius: 4px; text-transform: uppercase;
-    }
     .tag {
       font-size: 11px; font-weight: bold; padding: 4px 8px;
-      border-radius: 4px; text-transform: uppercase; white-space: nowrap;
+      border-radius: 4px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
     }
     .tag.disp { background: #dcfce7; color: #166534; }
     .tag.atrib { background: #fee2e2; color: #991b1b; }
@@ -219,9 +210,6 @@
 
     var cargoAtivo = '';
     var registros = [];
-    var statusAnteriorPorChave = {};
-    var chavesDestacadas = {};
-    var primeiraCarga = true;
     var carregandoAtual = false;
     var statusFiltro = 'TODOS';
     var periodoFiltro = 'TODOS';
@@ -277,12 +265,14 @@
       return linhas;
     }
 
+    function interpretarAtribuido(valorColunaA) {
+      var v = String(valorColunaA || '').trim().toUpperCase();
+      return v === 'TRUE' || v === 'VERDADEIRO' || v === '1' || v === 'SIM' || v === 'X';
+    }
+
     function abrirCargo(cargo) {
       cargoAtivo = cargo;
-      primeiraCarga = true;
       carregandoAtual = false;
-      statusAnteriorPorChave = {};
-      chavesDestacadas = {};
 
       document.getElementById('nomeCargo').textContent = cargo;
       document.getElementById('tela1').style.display = 'none';
@@ -322,8 +312,6 @@
       cargoAtivo = '';
       carregandoAtual = false;
       registros = [];
-      statusAnteriorPorChave = {};
-      chavesDestacadas = {};
       document.getElementById('tela2').style.display = 'none';
       document.getElementById('tela1').style.display = 'block';
     }
@@ -346,9 +334,9 @@
 
       var cargoConsulta = cargoAtivo;
       var sep = url.indexOf('?') === -1 ? '?' : '&';
-      var urlSemCache = url + sep + '_t=' + Date.now();
+      var urlSemCache = url + sep + '_t=' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
-      fetch(urlSemCache, { cache: 'no-store' })
+      fetch(urlSemCache, { cache: 'reload' })
         .then(function(resp) {
           if (!resp.ok) throw new Error('Falha ao baixar CSV (' + resp.status + ')');
           return resp.text();
@@ -366,7 +354,6 @@
             var linha = linhas[i];
             if (!linha || linha.length < 2) continue;
 
-            var numLinha = i + 1;
             var escola = String(linha[1] || '').trim();
             var ano = String(linha[4] || '').trim();
             var turma = String(linha[5] || '').trim();
@@ -376,12 +363,11 @@
 
             if (!escola && !aulasRaw) continue;
 
-            var atribuido = String(linha[0] || '').trim().toUpperCase() === 'TRUE';
+            var atribuido = interpretarAtribuido(linha[0]);
             var numConvertido = Number(aulasRaw.replace(',', '.'));
             var aulasValor = aulasRaw === '' ? 0 : (isNaN(numConvertido) ? aulasRaw : numConvertido);
 
             novos.push({
-              chave: numLinha + '|' + escola + '|' + ano + '|' + turma + '|' + periodo + '|' + disciplina,
               atribuido: atribuido,
               escola: escola,
               ano: ano,
@@ -392,9 +378,7 @@
             });
           }
 
-          detectarAlteracoes(novos);
           registros = novos;
-
           criarBotoesPeriodo();
           if (cargoAtivo === 'PEB II') criarBotoesDisciplina();
           filtrar();
@@ -406,7 +390,7 @@
           if (cargoAtivo !== cargoConsulta) return;
           var msg = (err && err.message) ? err.message : String(err);
 
-          if (primeiraCarga && registros.length === 0) {
+          if (registros.length === 0) {
             document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Erro: ' + escaparHtml(msg) + '</div>';
           } else {
             avisoSync.textContent = 'Falha na consulta; tente novamente';
@@ -420,30 +404,6 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-    }
-
-    function detectarAlteracoes(novos) {
-      var novoMapa = {};
-      for (var i = 0; i < novos.length; i++) {
-        var item = novos[i];
-        var chave = item.chave;
-        var atualAttr = !!item.atribuido;
-        novoMapa[chave] = atualAttr;
-
-        if (!primeiraCarga && statusAnteriorPorChave.hasOwnProperty(chave) && statusAnteriorPorChave[chave] !== atualAttr) {
-          marcarDestaqueTemporario(chave);
-        }
-      }
-      statusAnteriorPorChave = novoMapa;
-      primeiraCarga = false;
-    }
-
-    function marcarDestaqueTemporario(chave) {
-      chavesDestacadas[chave] = true;
-      setTimeout(function() {
-        delete chavesDestacadas[chave];
-        if (cargoAtivo) filtrar();
-      }, 6000);
     }
 
     function criarBotoesPeriodo() {
@@ -575,16 +535,13 @@
         var item = lista[k];
         var cls = item.atribuido ? 'atrib' : 'disp';
         var txt = item.atribuido ? 'Atribuído' : 'Disponível';
-        var emDestaque = !!chavesDestacadas[item.chave];
-        var clsDestaque = emDestaque ? ' alterado' : '';
-        var badgeAlterado = emDestaque ? '<span class="tag-novo-status">Atualizado</span>' : '';
         var discHtml = isPeb2 ? '<div class="col-2"><div class="dado-label">Disciplina</div><div class="dado-valor">' + escaparHtml(item.disciplina || '-') + '</div></div>' : '';
 
         html +=
-          '<div class="card ' + cls + clsDestaque + '">' +
+          '<div class="card ' + cls + '">' +
             '<div class="card-topo">' +
               '<div class="escola">' + escaparHtml(item.escola || '-') + '</div>' +
-              '<div class="tag-wrap">' + badgeAlterado + '<span class="tag ' + cls + '">' + txt + '</span></div>' +
+              '<span class="tag ' + cls + '">' + txt + '</span>' +
             '</div>' +
             '<div class="card-dados">' +
               '<div><div class="dado-label">Ano / Turma</div><div class="dado-valor">' + escaparHtml(item.ano || '-') + (item.turma ? ' • ' + escaparHtml(item.turma) : '') + '</div></div>' +
