@@ -32,12 +32,17 @@
       padding: 8px 14px; font-size: 13px; font-weight: bold; cursor: pointer;
     }
     .badge-cargo { font-size: 15px; font-weight: bold; color: #1a365d; }
-    .barra-status {
+    .barra-acao {
       display: flex; justify-content: space-between; align-items: center;
-      gap: 8px; font-size: 12px; color: #475569; margin-bottom: 12px; padding: 0 2px;
+      gap: 8px; margin-bottom: 12px;
     }
-    .status-ao-vivo { color: #166534; font-weight: bold; }
-    .status-alerta { color: #b45309; font-weight: bold; }
+    .status-aviso { font-size: 12px; color: #b45309; font-weight: bold; }
+    .btn-atualizar {
+      background: #2b6cb0; color: #fff; border: none; border-radius: 6px;
+      padding: 9px 14px; font-size: 13px; font-weight: bold; cursor: pointer;
+      margin-left: auto;
+    }
+    .btn-atualizar:disabled { opacity: 0.65; cursor: not-allowed; }
     .box-filtros {
       background: #fff; padding: 12px; border-radius: 8px;
       border: 1px solid #cbd5e1; margin-bottom: 12px;
@@ -151,9 +156,9 @@
         <div class="badge-cargo" id="nomeCargo"></div>
       </div>
 
-      <div class="barra-status">
-        <span class="status-ao-vivo" id="indicadorSync">&#9679; Auto-atualização (20s)</span>
-        <span id="horaAtualizacao">Sincronizando...</span>
+      <div class="barra-acao">
+        <span class="status-aviso" id="avisoSync"></span>
+        <button type="button" class="btn-atualizar" id="btnAtualizar" onclick="carregarDados()">&#8635; Atualizar dados</button>
       </div>
 
       <div class="box-filtros">
@@ -212,7 +217,6 @@
       'MATEMÁTICA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdXFaamp_UmPdN8qIhVVuJg20ljVFGHrX43-9pLkldyA1CQQqmkHXAP-wQl4dW5Sks6l78yE0fNgFk/pub?gid=1923005275&single=true&output=csv'
     };
 
-    var INTERVALO_MS = 20000;
     var cargoAtivo = '';
     var registros = [];
     var statusAnteriorPorChave = {};
@@ -222,7 +226,6 @@
     var statusFiltro = 'TODOS';
     var periodoFiltro = 'TODOS';
     var discFiltro = 'TODAS';
-    var intervalo = null;
 
     function parseCSV(texto) {
       var linhas = [];
@@ -292,16 +295,10 @@
       document.getElementById('contagem').textContent = '';
       document.getElementById('totalDisp').textContent = '0';
       document.getElementById('totalAtrib').textContent = '0';
+      document.getElementById('avisoSync').textContent = '';
       document.getElementById('conteudoCards').innerHTML = '<div class="aviso">Carregando saldo de aulas...</div>';
-      document.getElementById('indicadorSync').className = 'status-ao-vivo';
-      document.getElementById('indicadorSync').innerHTML = '&#9679; Auto-atualização (20s)';
-      document.getElementById('horaAtualizacao').textContent = 'Sincronizando...';
 
       carregarDados();
-      if (intervalo) clearInterval(intervalo);
-      intervalo = setInterval(function() {
-        if (cargoAtivo && !document.hidden && !carregandoAtual) carregarDados();
-      }, INTERVALO_MS);
     }
 
     function resetarVariaveisFiltro() {
@@ -322,7 +319,6 @@
     }
 
     function voltar() {
-      if (intervalo) clearInterval(intervalo);
       cargoAtivo = '';
       carregandoAtual = false;
       registros = [];
@@ -335,12 +331,19 @@
     function carregarDados() {
       if (!cargoAtivo || carregandoAtual) return;
       var url = URLS_CSV[cargoAtivo];
+      var btnAtualizar = document.getElementById('btnAtualizar');
+      var avisoSync = document.getElementById('avisoSync');
+
       if (!url || url.indexOf('COLE_A_URL_CSV_') === 0) {
         document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Configure a URL CSV deste cargo em URLS_CSV.</div>';
         return;
       }
 
       carregandoAtual = true;
+      btnAtualizar.disabled = true;
+      btnAtualizar.textContent = 'Atualizando...';
+      avisoSync.textContent = '';
+
       var cargoConsulta = cargoAtivo;
       var sep = url.indexOf('?') === -1 ? '?' : '&';
       var urlSemCache = url + sep + '_t=' + Date.now();
@@ -352,6 +355,8 @@
         })
         .then(function(csvTexto) {
           carregandoAtual = false;
+          btnAtualizar.disabled = false;
+          btnAtualizar.innerHTML = '&#8635; Atualizar dados';
           if (cargoAtivo !== cargoConsulta) return;
 
           var linhas = parseCSV(csvTexto);
@@ -390,26 +395,21 @@
           detectarAlteracoes(novos);
           registros = novos;
 
-          var d = new Date();
-          var h = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2);
-          document.getElementById('indicadorSync').className = 'status-ao-vivo';
-          document.getElementById('indicadorSync').innerHTML = '&#9679; Auto-atualização (20s)';
-          document.getElementById('horaAtualizacao').textContent = 'Atualizado às ' + h;
-
           criarBotoesPeriodo();
           if (cargoAtivo === 'PEB II') criarBotoesDisciplina();
           filtrar();
         })
         .catch(function(err) {
           carregandoAtual = false;
+          btnAtualizar.disabled = false;
+          btnAtualizar.innerHTML = '&#8635; Atualizar dados';
           if (cargoAtivo !== cargoConsulta) return;
           var msg = (err && err.message) ? err.message : String(err);
 
           if (primeiraCarga && registros.length === 0) {
             document.getElementById('conteudoCards').innerHTML = '<div class="aviso" style="color:#991b1b;">Erro: ' + escaparHtml(msg) + '</div>';
           } else {
-            document.getElementById('indicadorSync').className = 'status-alerta';
-            document.getElementById('indicadorSync').innerHTML = '&#9888; Oscilação na sincronização';
+            avisoSync.textContent = 'Falha na consulta; tente novamente';
           }
         });
     }
