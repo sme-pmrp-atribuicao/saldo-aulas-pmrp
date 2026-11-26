@@ -128,16 +128,8 @@
   <div class="container">
     <div id="tela1">
       <div class="titulo">SELECIONE O CARGO</div>
-      <div class="grid-cargos">
-        <button type="button" class="btn-cargo" onclick="abrirCargo('PEB II')"><span>PEB II</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('ARTE')"><span>ARTE</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('CIÊNCIAS')"><span>CIÊNCIAS</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('EDUCAÇÃO FÍSICA')"><span>EDUCAÇÃO FÍSICA</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('GEOGRAFIA')"><span>GEOGRAFIA</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('HISTÓRIA')"><span>HISTÓRIA</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('LÍNGUA INGLESA')"><span>LÍNGUA INGLESA</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('LÍNGUA PORTUGUESA')"><span>LÍNGUA PORTUGUESA</span><span>&#8250;</span></button>
-        <button type="button" class="btn-cargo" onclick="abrirCargo('MATEMÁTICA')"><span>MATEMÁTICA</span><span>&#8250;</span></button>
+      <div class="grid-cargos" id="gridCargos">
+        <div class="aviso" style="grid-column: 1 / -1;">Carregando opções...</div>
       </div>
     </div>
 
@@ -196,7 +188,7 @@
   </div>
 
   <script>
-    var URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbxq-MCB7MCOEQypid_7A2QwyXwNpjnui1tjDNUk6LHtqrOB_wN245NeTAxNKYU5QopKGw/exec';
+    var URL_WEB_APP = 'COLE_AQUI_A_URL_EXEC_DO_APPS_SCRIPT';
 
     var cargoAtivo = '';
     var registros = [];
@@ -204,6 +196,63 @@
     var statusFiltro = 'TODOS';
     var periodoFiltro = 'TODOS';
     var discFiltro = 'TODAS';
+
+    function renderizarBotoesCargos(listaCargos) {
+      var grid = document.getElementById('gridCargos');
+      grid.innerHTML = '';
+
+      if (!Array.isArray(listaCargos) || listaCargos.length === 0) {
+        grid.innerHTML = '<div class="aviso" style="grid-column: 1 / -1;">Nenhum saldo habilitado no momento.</div>';
+        return;
+      }
+
+      for (var i = 0; i < listaCargos.length; i++) {
+        (function(nomeCargo) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn-cargo';
+          btn.onclick = function() { abrirCargo(nomeCargo); };
+
+          var spanNome = document.createElement('span');
+          spanNome.textContent = nomeCargo;
+
+          var spanSeta = document.createElement('span');
+          spanSeta.innerHTML = '&#8250;';
+
+          btn.appendChild(spanNome);
+          btn.appendChild(spanSeta);
+          grid.appendChild(btn);
+        })(listaCargos[i]);
+      }
+    }
+
+    function carregarCargosAtivos() {
+      var grid = document.getElementById('gridCargos');
+
+      if (!URL_WEB_APP || URL_WEB_APP.indexOf('COLE_AQUI_') === 0) {
+        grid.innerHTML = '<div class="aviso" style="grid-column: 1 / -1; color:#991b1b;">Configure a URL /exec do Apps Script em URL_WEB_APP.</div>';
+        return;
+      }
+
+      var sep = URL_WEB_APP.indexOf('?') === -1 ? '?' : '&';
+      var endpoint = URL_WEB_APP + sep + 'acao=cargos&_t=' + Date.now();
+
+      fetch(endpoint, { cache: 'no-store' })
+        .then(function(resp) {
+          if (!resp.ok) throw new Error('Falha ao carregar cargos (' + resp.status + ')');
+          return resp.json();
+        })
+        .then(function(dados) {
+          if (!dados || !dados.ok) {
+            throw new Error(dados && dados.erro ? dados.erro : 'Resposta inválida ao ler cargos.');
+          }
+          renderizarBotoesCargos(dados.cargos);
+        })
+        .catch(function(err) {
+          var msg = (err && err.message) ? err.message : String(err);
+          grid.innerHTML = '<div class="aviso" style="grid-column: 1 / -1; color:#991b1b;">Erro: ' + escaparHtml(msg) + '</div>';
+        });
+    }
 
     function abrirCargo(cargo) {
       cargoAtivo = cargo;
@@ -249,6 +298,7 @@
       registros = [];
       document.getElementById('tela2').style.display = 'none';
       document.getElementById('tela1').style.display = 'block';
+      carregarCargosAtivos();
     }
 
     function carregarDados() {
@@ -460,6 +510,8 @@
 
       document.getElementById('conteudoCards').innerHTML = html;
     }
+
+    carregarCargosAtivos();
   </script>
 </body>
 </html>
